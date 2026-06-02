@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olebogeng Molefe // Smart Portfolio CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #050b14;
+            --panel: rgba(10, 22, 40, 0.82);
+            --panel-strong: rgba(13, 30, 52, 0.96);
+            --cyan: #00d9ff;
+            --cyan-soft: rgba(0, 217, 255, 0.16);
+            --cyan-border: rgba(0, 217, 255, 0.36);
+            --green: #4ade80;
+            --orange: #ffb454;
+            --red: #ff5c7a;
+            --text: #f4fbff;
+            --muted: #9bb3c8;
+            --line: rgba(155, 179, 200, 0.18);
+            --shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+            --radius: 8px;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: "Rajdhani", system-ui, sans-serif;
+            background:
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 20% 0%, rgba(255, 180, 84, 0.16), transparent 32%),
+                radial-gradient(circle at 80% 10%, rgba(74, 222, 128, 0.12), transparent 28%),
+                linear-gradient(135deg, #050b14 0%, #0a1628 58%, #111827 100%);
+            background-size: 48px 48px, 48px 48px, auto, auto, auto;
+            overflow-x: hidden;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 217, 255, 0.035) 50%);
+            background-size: 100% 4px;
+            z-index: 20;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .shell {
+            width: min(1380px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 0 24px;
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .mark {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--cyan-border);
+            background: var(--cyan-soft);
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            font-weight: 900;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            box-shadow: 0 0 26px rgba(0, 217, 255, 0.2);
+        }
+
+        .brand-title {
+            margin: 0;
+            font-family: "Orbitron", sans-serif;
+            font-size: clamp(1rem, 2vw, 1.35rem);
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            margin: 2px 0 0;
+            color: var(--muted);
+            font-size: 0.98rem;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            min-height: 42px;
+            border: 1px solid var(--cyan-border);
+            color: var(--cyan);
+            background: rgba(5, 11, 20, 0.82);
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            border-color: var(--cyan);
+            background: rgba(0, 217, 255, 0.12);
+        }
+
+        .btn.primary {
+            color: #03111e;
+            background: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        .btn.danger {
+            color: var(--red);
+            border-color: rgba(255, 92, 122, 0.5);
+        }
+
+        .btn.ghost {
+            color: var(--muted);
+            border-color: var(--line);
+        }
+
+        .hero {
+            position: relative;
+            min-height: 470px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+            gap: 28px;
+            align-items: stretch;
+            padding: 28px;
+            border: 1px solid var(--cyan-border);
+            background: rgba(5, 11, 20, 0.66);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(110deg, rgba(0, 217, 255, 0.12), transparent 28%),
+                linear-gradient(290deg, rgba(255, 180, 84, 0.11), transparent 32%);
+            pointer-events: none;
+        }
+
+        .hero-copy,
+        .hero-console {
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--green);
+            border: 1px solid rgba(74, 222, 128, 0.45);
+            background: rgba(74, 222, 128, 0.08);
+            border-radius: 999px;
+            padding: 7px 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 26px;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--green);
+            box-shadow: 0 0 18px var(--green);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Orbitron", sans-serif;
+            font-size: clamp(2.6rem, 7vw, 5.8rem);
+            line-height: 0.98;
+            text-transform: uppercase;
+            color: var(--cyan);
+            text-shadow: 0 0 34px rgba(0, 217, 255, 0.45);
+            letter-spacing: 0;
+        }
+
+        .headline {
+            max-width: 760px;
+            margin: 18px 0 0;
+            color: #dcecff;
+            font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+            line-height: 1.45;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        .hero-console {
+            min-height: 360px;
+            border: 1px solid var(--line);
+            background:
+                linear-gradient(rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0)),
+                rgba(10, 22, 40, 0.8);
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 12px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .stat {
+            padding: 14px;
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.56);
+            border-radius: var(--radius);
+        }
+
+        .stat-value {
+            display: block;
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .stat-label {
+            display: block;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 12px;
+            margin: 18px 0 28px;
+        }
+
+        .nav-tile {
+            text-align: left;
+            min-height: 96px;
+            border: 1px solid var(--cyan-border);
+            background: var(--panel);
+            color: var(--text);
+            border-radius: var(--radius);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .nav-tile:hover,
+        .nav-tile.active {
+            transform: translateY(-2px);
+            border-color: var(--cyan);
+        }
+
+        .nav-number {
+            color: rgba(0, 217, 255, 0.55);
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .nav-label {
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .section {
+            display: none;
+            border: 1px solid var(--cyan-border);
+            background: var(--panel);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 18px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            letter-spacing: 0;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            max-width: 620px;
+            line-height: 1.5;
+            margin: 8px 0 0;
+        }
+
+        .project-layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.05fr);
+            gap: 20px;
+        }
+
+        .featured-card,
+        .admin-card,
+        .plain-panel {
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.56);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .featured-visual {
+            aspect-ratio: 16 / 10;
+            background:
+                linear-gradient(135deg, rgba(0, 217, 255, 0.18), rgba(255, 180, 84, 0.12)),
+                #07111f;
+            display: grid;
+            place-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-visual img,
+        .screenshot-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .visual-placeholder {
+            color: rgba(244, 251, 255, 0.74);
+            font-family: "Orbitron", sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 18px;
+        }
+
+        .featured-body {
+            padding: 20px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: var(--orange);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .featured-body h3,
+        .project-card h3,
+        .admin-card h3,
+        .plain-panel h3 {
+            margin: 0 0 10px;
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
+
+        .featured-body p,
+        .project-card p,
+        .plain-panel p {
+            color: var(--muted);
+            line-height: 1.5;
+            margin: 0 0 14px;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            color: var(--cyan);
+            border: 1px solid var(--cyan-border);
+            background: var(--cyan-soft);
+            border-radius: 999px;
+            padding: 5px 9px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .project-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .project-card {
+            text-align: left;
+            width: 100%;
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.48);
+            color: var(--text);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .project-card.active,
+        .project-card:hover {
+            border-color: var(--cyan);
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .skills-grid,
+        .about-grid,
+        .contact-grid,
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .skill-card,
+        .contact-card,
+        .cv-card {
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.5);
+            border-radius: var(--radius);
+            padding: 18px;
+        }
+
+        .skill-card h3,
+        .contact-card h3,
+        .cv-card h3 {
+            margin: 0 0 12px;
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
+
+        .meter {
+            height: 9px;
+            background: rgba(155, 179, 200, 0.16);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--green));
+            box-shadow: 0 0 14px rgba(0, 217, 255, 0.45);
+        }
+
+        .skill-row {
+            display: grid;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .skill-label {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .about-grid {
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+        }
+
+        .about-copy {
+            color: #dcecff;
+            line-height: 1.72;
+            font-size: 1.12rem;
+            margin: 0;
+            white-space: pre-line;
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .activity-list li {
+            border-left: 3px solid var(--cyan);
+            padding-left: 12px;
+            color: var(--muted);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .screenshot-card {
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.5);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .screenshot-visual {
+            aspect-ratio: 16 / 10;
+            display: grid;
+            place-items: center;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .screenshot-card figcaption {
+            color: var(--muted);
+            margin: 0;
+            padding: 12px;
+            font-weight: 700;
+        }
+
+        .admin-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .admin-tab {
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.64);
+            color: var(--muted);
+            border-radius: var(--radius);
+            padding: 9px 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .admin-tab.active {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: var(--cyan-soft);
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-card {
+            padding: 18px;
+        }
+
+        .admin-grid {
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.76);
+            color: var(--text);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            min-height: 42px;
+        }
+
+        .field textarea {
+            min-height: 116px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: 2px solid rgba(0, 217, 255, 0.35);
+            border-color: var(--cyan);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .manager-list {
+            display: grid;
+            gap: 10px;
+            max-height: 610px;
+            overflow: auto;
+            padding-right: 4px;
+        }
+
+        .manager-item {
+            display: grid;
+            gap: 10px;
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.48);
+            border-radius: var(--radius);
+            padding: 12px;
+        }
+
+        .manager-item-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .manager-item-title {
+            color: var(--cyan);
+            font-family: "Orbitron", sans-serif;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .manager-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .icon-btn {
+            min-width: 38px;
+            min-height: 36px;
+            border: 1px solid var(--line);
+            background: rgba(5, 11, 20, 0.78);
+            color: var(--cyan);
+            border-radius: var(--radius);
+            font-weight: 900;
+        }
+
+        .notice {
+            color: var(--muted);
+            border: 1px solid var(--line);
+            background: rgba(255, 180, 84, 0.08);
+            border-radius: var(--radius);
+            padding: 12px;
+            line-height: 1.45;
+        }
+
+        .empty {
+            color: var(--muted);
+            border: 1px dashed var(--line);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .toast {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 30;
+            padding: 12px 14px;
+            border: 1px solid var(--cyan-border);
+            background: var(--panel-strong);
+            color: var(--text);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transform: translateY(18px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1120px) {
+            .hero,
+            .project-layout,
+            .admin-grid,
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .skills-grid,
+            .contact-grid,
+            .screenshots-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .shell {
+                width: min(100% - 20px, 1380px);
+                padding-top: 12px;
+            }
+
+            .topbar,
+            .section-header,
+            .manager-item-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 18px;
+            }
+
+            .nav-grid,
+            .skills-grid,
+            .contact-grid,
+            .screenshots-grid,
+            .stat-grid,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tile {
+                min-height: 78px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="topbar">
+            <div class="brand-lockup">
+                <div class="mark">OM</div>
+                <div>
+                    <p class="brand-title" id="brandName">Olebogeng Molefe</p>
+                    <p class="brand-subtitle" id="brandSubtitle">Full-stack developer portfolio CMS</p>
+                </div>
+            </div>
+            <div class="top-actions">
+                <button class="btn ghost" type="button" data-nav="public">View Portfolio</button>
+                <button class="btn" type="button" data-nav="admin">Admin CMS</button>
+                <a class="btn primary" id="cvTopLink" href="Molefe_CV.pdf" download>Download CV</a>
+            </div>
+        </div>
+
+        <main id="publicView">
+            <section class="hero" aria-labelledby="heroTitle">
+                <div class="hero-copy">
+                    <div class="status-pill"><span class="pulse"></span><span id="statusText">Available for internship opportunities</span></div>
+                    <h1 id="heroTitle">Olebogeng Molefe</h1>
+                    <p class="headline" id="heroHeadline"></p>
+                    <div class="hero-actions">
+                        <button class="btn primary" type="button" data-section="projects">View Projects</button>
+                        <button class="btn" type="button" data-section="contact">Contact Me</button>
+                    </div>
+                </div>
+                <aside class="hero-console" aria-label="Portfolio statistics">
+                    <div class="console-header">
+                        <span>CMS Status</span>
+                        <span id="saveState">Synced locally</span>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat">
+                            <span class="stat-value" id="projectCount">0</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="skillCount">0</span>
+                            <span class="stat-label">Skills</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="screenshotCount">0</span>
+                            <span class="stat-label">Screenshots</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="cvUpdated">2026</span>
+                            <span class="stat-label">CV Updated</span>
+                        </div>
+                    </div>
+                    <div class="notice">
+                        This portfolio is now editable from the Admin CMS. Changes save inside this browser and can be exported as JSON.
+                    </div>
+                </aside>
+            </section>
+
+            <nav class="nav-grid" aria-label="Portfolio sections">
+                <button class="nav-tile active" type="button" data-section="projects">
+                    <span class="nav-number">01</span>
+                    <span class="nav-label">Projects</span>
+                </button>
+                <button class="nav-tile" type="button" data-section="skills">
+                    <span class="nav-number">02</span>
+                    <span class="nav-label">Skills</span>
+                </button>
+                <button class="nav-tile" type="button" data-section="screenshots">
+                    <span class="nav-number">03</span>
+                    <span class="nav-label">Screenshots</span>
+                </button>
+                <button class="nav-tile" type="button" data-section="about">
+                    <span class="nav-number">04</span>
+                    <span class="nav-label">About</span>
+                </button>
+                <button class="nav-tile" type="button" data-section="cv">
+                    <span class="nav-number">05</span>
+                    <span class="nav-label">CV</span>
+                </button>
+                <button class="nav-tile" type="button" data-section="contact">
+                    <span class="nav-number">06</span>
+                    <span class="nav-label">Contact</span>
+                </button>
+            </nav>
+
+            <section class="section active" id="projects">
+                <div class="section-header">
+                    <div>
+                        <h2>Projects Archive</h2>
+                        <p>Editable project case studies with links, stack tags, and screenshots.</p>
+                    </div>
+                </div>
+                <div class="project-layout">
+                    <article class="featured-card" id="featuredProject"></article>
+                    <div class="project-list" id="projectList"></div>
+                </div>
+            </section>
+
+            <section class="section" id="skills">
+                <div class="section-header">
+                    <div>
+                        <h2>Technical Skills</h2>
+                        <p>Skill categories can be edited in the CMS as your portfolio grows.</p>
+                    </div>
+                </div>
+                <div class="skills-grid" id="skillsGrid"></div>
+            </section>
+
+            <section class="section" id="screenshots">
+                <div class="section-header">
+                    <div>
+                        <h2>Project Screenshots</h2>
+                        <p>Add screenshot URLs or upload local images from the admin panel.</p>
+                    </div>
+                </div>
+                <div class="screenshots-grid" id="screenshotsGrid"></div>
+            </section>
+
+            <section class="section" id="about">
+                <div class="section-header">
+                    <div>
+                        <h2>System Information</h2>
+                        <p>Background, current focus, and professional story.</p>
+                    </div>
+                </div>
+                <div class="about-grid">
+                    <div class="plain-panel">
+                        <div class="featured-body">
+                            <h3>Profile</h3>
+                            <p class="about-copy" id="aboutText"></p>
+                        </div>
+                    </div>
+                    <div class="plain-panel">
+                        <div class="featured-body">
+                            <h3>Current Focus</h3>
+                            <ul class="activity-list" id="focusList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="cv">
+                <div class="section-header">
+                    <div>
+                        <h2>CV Console</h2>
+                        <p>Keep your CV metadata current without editing HTML.</p>
+                    </div>
+                    <a class="btn primary" id="cvSectionLink" href="Molefe_CV.pdf" download>Download CV</a>
+                </div>
+                <div class="contact-grid" id="cvDetailsGrid"></div>
+            </section>
+
+            <section class="section" id="contact">
+                <div class="section-header">
+                    <div>
+                        <h2>Establish Connection</h2>
+                        <p>Contact details and public profiles, managed from the CMS.</p>
+                    </div>
+                </div>
+                <div class="contact-grid" id="contactGrid"></div>
+            </section>
+        </main>
+
+        <main id="adminView" hidden>
+            <section class="section active">
+                <div class="section-header">
+                    <div>
+                        <h2>Admin CMS</h2>
+                        <p>Edit the portfolio content below. This static CMS stores your changes in this browser.</p>
+                    </div>
+                    <div class="top-actions">
+                        <button class="btn" type="button" id="exportData">Export JSON</button>
+                        <label class="btn" for="importData">Import JSON</label>
+                        <input id="importData" type="file" accept="application/json" hidden>
+                        <button class="btn danger" type="button" id="resetData">Reset Demo Data</button>
+                    </div>
+                </div>
+
+                <div class="admin-tabs" role="tablist">
+                    <button class="admin-tab active" type="button" data-admin-tab="profile">Profile</button>
+                    <button class="admin-tab" type="button" data-admin-tab="projects">Projects</button>
+                    <button class="admin-tab" type="button" data-admin-tab="skills">Skills</button>
+                    <button class="admin-tab" type="button" data-admin-tab="screenshots">Screenshots</button>
+                    <button class="admin-tab" type="button" data-admin-tab="cv">CV</button>
+                </div>
+
+                <div class="admin-panel active" id="admin-profile">
+                    <div class="admin-card">
+                        <h3>Profile Details</h3>
+                        <form id="profileForm" class="form-grid"></form>
+                    </div>
+                </div>
+
+                <div class="admin-panel" id="admin-projects">
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3 id="projectFormTitle">Add Project</h3>
+                            <form id="projectForm" class="form-grid"></form>
+                        </div>
+                        <div class="admin-card">
+                            <h3>Manage Projects</h3>
+                            <div class="manager-list" id="projectManager"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-panel" id="admin-skills">
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3 id="skillFormTitle">Add Skill</h3>
+                            <form id="skillForm" class="form-grid"></form>
+                        </div>
+                        <div class="admin-card">
+                            <h3>Manage Skills</h3>
+                            <div class="manager-list" id="skillManager"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-panel" id="admin-screenshots">
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3 id="screenshotFormTitle">Add Screenshot</h3>
+                            <form id="screenshotForm" class="form-grid"></form>
+                        </div>
+                        <div class="admin-card">
+                            <h3>Manage Screenshots</h3>
+                            <div class="manager-list" id="screenshotManager"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-panel" id="admin-cv">
+                    <div class="admin-card">
+                        <h3>CV Details</h3>
+                        <form id="cvForm" class="form-grid"></form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        const STORAGE_KEY = "olebogeng.smartPortfolioCMS.v1";
+
+        const initialData = {
+            profile: {
+                name: "Olebogeng Molefe",
+                subtitle: "Computer Science graduate | Full-stack development intern",
+                status: "Available for internship opportunities",
+                headline: "I build practical web systems for IT support, system testing, data management, and portfolio storytelling.",
+                about: "I am an organized and dependable Computer Science graduate with knowledge in programming, data analysis, project management, support and maintenance, and system testing. This portfolio is managed through a lightweight CMS so I can keep my projects, CV, skills, and screenshots up to date without editing HTML manually.",
+                focus: "Full-stack development\nIT support systems\nSystem testing workflows\nData-driven dashboards",
+                email: "kayole68@gmail.com",
+                phone: "065 962 9821",
+                location: "Soshanguve, South Africa",
+                github: "https://github.com/yourusername",
+                linkedin: "https://linkedin.com/in/yourusername"
+            },
+            cv: {
+                file: "Molefe_CV.pdf",
+                format: "PDF Document",
+                size: "1 186 KB",
+                updated: "January 2026",
+                language: "English",
+                contents: "Professional Summary\nWork Experience\nTechnical Skills\nEducation\nMicrosoft Certified: Azure AI Engineer Associate - NEMISA\nCertifications\nProjects"
+            },
+            projects: [
+                {
+                    id: "project-it-support-command-center",
+                    title: "IT Support Command Center",
+                    category: "Full-stack Dashboard",
+                    status: "Roadmap Ready",
+                    description: "A full-stack dashboard for tracking support tickets, IT assets, test cases, and operational reports.",
+                    stack: "React, Node.js, Express, SQLite, Recharts",
+                    link: "",
+                    repo: "",
+                    image: ""
+                },
+                {
+                    id: "project-smart-portfolio-cms",
+                    title: "Smart Portfolio CMS",
+                    category: "Portfolio System",
+                    status: "In Progress",
+                    description: "A browser-editable portfolio that stores projects, skills, CV details, and screenshots without manual HTML changes.",
+                    stack: "HTML, CSS, JavaScript, LocalStorage",
+                    link: "",
+                    repo: "",
+                    image: ""
+                },
+                {
+                    id: "project-system-testing-tracker",
+                    title: "System Testing Tracker",
+                    category: "QA Workflow",
+                    status: "Concept",
+                    description: "A system testing tracker for test cases, pass/fail results, bug notes, and release readiness summaries.",
+                    stack: "React, Node.js, SQL",
+                    link: "",
+                    repo: "",
+                    image: ""
+                }
+            ],
+            skills: [
+                { id: "skill-java", name: "Java", category: "Programming", level: 82 },
+                { id: "skill-sql", name: "SQL", category: "Database", level: 84 },
+                { id: "skill-react", name: "React", category: "Frontend", level: 76 },
+                { id: "skill-python", name: "Python", category: "Programming", level: 78 },
+                { id: "skill-kotlin-android", name: "Kotlin / Android Studio", category: "Mobile", level: 72 },
+                { id: "skill-linux", name: "Linux", category: "Systems", level: 74 },
+                { id: "skill-aws-cloud", name: "AWS Cloud Foundation", category: "Cloud", level: 70 },
+                { id: "skill-azure-ai-engineer", name: "Microsoft Azure AI Engineer Associate", category: "Cloud & AI", level: 78 },
+                { id: "skill-system-testing", name: "System Testing", category: "Quality Assurance", level: 86 }
+            ],
+            screenshots: [
+                {
+                    id: "screenshot-command-dashboard",
+                    title: "Command Dashboard Mockup",
+                    project: "IT Support Command Center",
+                    caption: "Dashboard concept for tickets, assets, and system test status.",
+                    image: ""
+                },
+                {
+                    id: "screenshot-portfolio-cms-admin",
+                    title: "Portfolio CMS Admin",
+                    project: "Smart Portfolio CMS",
+                    caption: "Admin view for editing projects, skills, CV details, and screenshots.",
+                    image: ""
+                }
+            ]
+        };
+
+        let data = loadData();
+        let selectedProjectId = data.projects[0]?.id || null;
+        let editingProjectId = null;
+        let editingSkillId = null;
+        let editingScreenshotId = null;
+
+        const els = {
+            publicView: document.getElementById("publicView"),
+            adminView: document.getElementById("adminView"),
+            toast: document.getElementById("toast")
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            bindNavigation();
+            bindAdminTabs();
+            bindForms();
+            renderAll();
+            if (location.hash === "#admin") {
+                showView("admin");
+            }
+        });
+
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) return cloneData(initialData);
+            try {
+                return mergeData(cloneData(initialData), JSON.parse(stored));
+            } catch {
+                return cloneData(initialData);
+            }
+        }
+
+        function mergeData(base, incoming) {
+            return {
+                ...base,
+                ...incoming,
+                profile: { ...base.profile, ...(incoming.profile || {}) },
+                cv: mergeCvDetails(base.cv, incoming.cv),
+                projects: mergeDefaultItems(base.projects, incoming.projects),
+                skills: mergeDefaultItems(base.skills, incoming.skills),
+                screenshots: mergeDefaultItems(base.screenshots, incoming.screenshots)
+            };
+        }
+
+        function mergeCvDetails(defaultCv, savedCv) {
+            if (!savedCv) return defaultCv;
+            const cv = { ...defaultCv, ...savedCv };
+            const savedLines = new Set(String(savedCv.contents || "").split("\n").map(line => line.trim()).filter(Boolean));
+            const missingLines = String(defaultCv.contents || "").split("\n").map(line => line.trim()).filter(line => line && !savedLines.has(line));
+            cv.contents = [savedCv.contents, ...missingLines].filter(Boolean).join("\n");
+            return cv;
+        }
+
+        function mergeDefaultItems(defaultItems, savedItems) {
+            if (!Array.isArray(savedItems)) return defaultItems;
+            const savedIds = new Set(savedItems.map(item => item.id));
+            return [
+                ...savedItems,
+                ...defaultItems.filter(item => !savedIds.has(item.id))
+            ];
+        }
+
+        function saveData(message = "Changes saved") {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            document.getElementById("saveState").textContent = "Saved locally";
+            renderAll();
+            showToast(message);
+        }
+
+        function showToast(message) {
+            els.toast.textContent = message;
+            els.toast.classList.add("show");
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
+        }
+
+        function bindNavigation() {
+            document.querySelectorAll("[data-nav]").forEach(button => {
+                button.addEventListener("click", () => showView(button.dataset.nav));
+            });
+
+            document.querySelectorAll("[data-section]").forEach(button => {
+                button.addEventListener("click", () => showSection(button.dataset.section));
+            });
+        }
+
+        function showView(view) {
+            const isAdmin = view === "admin";
+            els.publicView.hidden = isAdmin;
+            els.adminView.hidden = !isAdmin;
+            location.hash = isAdmin ? "admin" : "";
+            if (!isAdmin) showSection("projects");
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll(".section").forEach(section => {
+                if (section.closest("#adminView")) return;
+                section.classList.toggle("active", section.id === sectionId);
+            });
+            document.querySelectorAll(".nav-tile").forEach(tile => {
+                tile.classList.toggle("active", tile.dataset.section === sectionId);
+            });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function bindAdminTabs() {
+            document.querySelectorAll(".admin-tab").forEach(tab => {
+                tab.addEventListener("click", () => {
+                    document.querySelectorAll(".admin-tab").forEach(item => item.classList.remove("active"));
+                    document.querySelectorAll(".admin-panel").forEach(panel => panel.classList.remove("active"));
+                    tab.classList.add("active");
+                    document.getElementById(`admin-${tab.dataset.adminTab}`).classList.add("active");
+                });
+            });
+        }
+
+        function bindForms() {
+            document.getElementById("exportData").addEventListener("click", exportData);
+            document.getElementById("importData").addEventListener("change", importData);
+            document.getElementById("resetData").addEventListener("click", () => {
+                if (!confirm("Reset all CMS content to demo data?")) return;
+                data = cloneData(initialData);
+                selectedProjectId = data.projects[0]?.id || null;
+                editingProjectId = null;
+                editingSkillId = null;
+                editingScreenshotId = null;
+                saveData("Demo data restored");
+            });
+        }
+
+        function renderAll() {
+            normalizeSelection();
+            renderProfile();
+            renderProjects();
+            renderSkills();
+            renderScreenshots();
+            renderAbout();
+            renderCv();
+            renderContact();
+            renderAdminForms();
+            renderManagers();
+            renderStats();
+        }
+
+        function normalizeSelection() {
+            if (!data.projects.some(project => project.id === selectedProjectId)) {
+                selectedProjectId = data.projects[0]?.id || null;
+            }
+        }
+
+        function renderProfile() {
+            const { profile } = data;
+            document.title = `${profile.name} // Smart Portfolio CMS`;
+            setText("brandName", profile.name);
+            setText("brandSubtitle", profile.subtitle);
+            setText("heroTitle", profile.name);
+            setText("heroHeadline", profile.headline);
+            setText("statusText", profile.status);
+        }
+
+        function renderStats() {
+            setText("projectCount", data.projects.length);
+            setText("skillCount", data.skills.length);
+            setText("screenshotCount", data.screenshots.length);
+            setText("cvUpdated", data.cv.updated);
+        }
+
+        function renderProjects() {
+            const selected = data.projects.find(project => project.id === selectedProjectId);
+            const featured = document.getElementById("featuredProject");
+            const list = document.getElementById("projectList");
+
+            if (!selected) {
+                featured.innerHTML = `<div class="empty">No projects yet. Add your first project in the Admin CMS.</div>`;
+                list.innerHTML = "";
+                return;
+            }
+
+            featured.innerHTML = `
+                <div class="featured-visual">
+                    ${imageMarkup(selected.image, selected.title)}
+                </div>
+                <div class="featured-body">
+                    <span class="eyebrow">${escapeHtml(selected.category)} / ${escapeHtml(selected.status)}</span>
+                    <h3>${escapeHtml(selected.title)}</h3>
+                    <p>${escapeHtml(selected.description)}</p>
+                    <div class="tag-row">${renderTags(selected.stack)}</div>
+                    <div class="hero-actions">
+                        ${selected.link ? `<a class="btn primary" href="${escapeAttr(selected.link)}" target="_blank" rel="noreferrer">Live Demo</a>` : ""}
+                        ${selected.repo ? `<a class="btn" href="${escapeAttr(selected.repo)}" target="_blank" rel="noreferrer">Repository</a>` : ""}
+                    </div>
+                </div>
+            `;
+
+            list.innerHTML = data.projects.map(project => `
+                <button class="project-card ${project.id === selectedProjectId ? "active" : ""}" type="button" data-project-id="${project.id}">
+                    <div class="project-meta">
+                        <span>${escapeHtml(project.category)}</span>
+                        <span>${escapeHtml(project.status)}</span>
+                    </div>
+                    <h3>${escapeHtml(project.title)}</h3>
+                    <p>${escapeHtml(project.description)}</p>
+                    <div class="tag-row">${renderTags(project.stack)}</div>
+                </button>
+            `).join("");
+
+            list.querySelectorAll("[data-project-id]").forEach(button => {
+                button.addEventListener("click", () => {
+                    selectedProjectId = button.dataset.projectId;
+                    renderProjects();
+                });
+            });
+        }
+
+        function renderSkills() {
+            const grid = document.getElementById("skillsGrid");
+            const grouped = groupBy(data.skills, "category");
+            const categories = Object.keys(grouped).sort();
+
+            grid.innerHTML = categories.length ? categories.map(category => `
+                <article class="skill-card">
+                    <h3>${escapeHtml(category)}</h3>
+                    ${grouped[category].map(skill => `
+                        <div class="skill-row">
+                            <div class="skill-label">
+                                <span>${escapeHtml(skill.name)}</span>
+                                <span>${Number(skill.level)}%</span>
+                            </div>
+                            <div class="meter"><div class="meter-fill" style="width: ${Number(skill.level)}%"></div></div>
+                        </div>
+                    `).join("")}
+                </article>
+            `).join("") : `<div class="empty">No skills yet.</div>`;
+        }
+
+        function renderScreenshots() {
+            const grid = document.getElementById("screenshotsGrid");
+            grid.innerHTML = data.screenshots.length ? data.screenshots.map(item => `
+                <figure class="screenshot-card">
+                    <div class="screenshot-visual">
+                        ${imageMarkup(item.image, item.title)}
+                    </div>
+                    <figcaption>
+                        <span class="eyebrow">${escapeHtml(item.project)}</span><br>
+                        ${escapeHtml(item.title)}<br>
+                        <span>${escapeHtml(item.caption)}</span>
+                    </figcaption>
+                </figure>
+            `).join("") : `<div class="empty">No screenshots yet.</div>`;
+        }
+
+        function renderAbout() {
+            setText("aboutText", data.profile.about);
+            const focusItems = data.profile.focus.split("\n").filter(Boolean);
+            document.getElementById("focusList").innerHTML = focusItems.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+        }
+
+        function renderCv() {
+            const cvLinks = [document.getElementById("cvTopLink"), document.getElementById("cvSectionLink")];
+            cvLinks.forEach(link => {
+                link.href = data.cv.file || "#";
+                link.setAttribute("download", "");
+            });
+
+            const entries = [
+                ["Format", data.cv.format],
+                ["File Size", data.cv.size],
+                ["Last Updated", data.cv.updated],
+                ["Language", data.cv.language],
+                ["Contents", data.cv.contents.split("\n").filter(Boolean).join(", ")]
+            ];
+
+            document.getElementById("cvDetailsGrid").innerHTML = entries.map(([label, value]) => `
+                <article class="cv-card">
+                    <h3>${escapeHtml(label)}</h3>
+                    <p>${escapeHtml(value)}</p>
+                </article>
+            `).join("");
+        }
+
+        function renderContact() {
+            const contacts = [
+                ["Email", data.profile.email, `mailto:${data.profile.email}`],
+                ["Phone", data.profile.phone, `tel:${data.profile.phone.replace(/\s/g, "")}`],
+                ["Location", data.profile.location, ""],
+                ["GitHub", data.profile.github, data.profile.github],
+                ["LinkedIn", data.profile.linkedin, data.profile.linkedin]
+            ];
+
+            document.getElementById("contactGrid").innerHTML = contacts.map(([label, value, href]) => `
+                <article class="contact-card">
+                    <h3>${escapeHtml(label)}</h3>
+                    ${href ? `<a href="${escapeAttr(href)}" target="${href.startsWith("http") ? "_blank" : "_self"}" rel="noreferrer">${escapeHtml(value)}</a>` : `<p>${escapeHtml(value)}</p>`}
+                </article>
+            `).join("");
+        }
+
+        function renderAdminForms() {
+            renderProfileForm();
+            renderProjectForm();
+            renderSkillForm();
+            renderScreenshotForm();
+            renderCvForm();
+        }
+
+        function renderProfileForm() {
+            const p = data.profile;
+            const form = document.getElementById("profileForm");
+            form.innerHTML = `
+                ${field("Name", "name", p.name)}
+                ${field("Subtitle", "subtitle", p.subtitle)}
+                ${field("Status", "status", p.status)}
+                ${field("Email", "email", p.email, "email")}
+                ${field("Phone", "phone", p.phone)}
+                ${field("Location", "location", p.location)}
+                ${field("GitHub URL", "github", p.github, "url")}
+                ${field("LinkedIn URL", "linkedin", p.linkedin, "url")}
+                ${field("Headline", "headline", p.headline, "text", true)}
+                ${textarea("About", "about", p.about)}
+                ${textarea("Current Focus", "focus", p.focus)}
+                <div class="field full"><button class="btn primary" type="submit">Save Profile</button></div>
+            `;
+            form.onsubmit = event => {
+                event.preventDefault();
+                const values = getFormValues(form);
+                data.profile = { ...data.profile, ...values };
+                saveData("Profile updated");
+            };
+        }
+
+        function renderProjectForm() {
+            const project = data.projects.find(item => item.id === editingProjectId) || emptyProject();
+            const form = document.getElementById("projectForm");
+            document.getElementById("projectFormTitle").textContent = editingProjectId ? "Edit Project" : "Add Project";
+            form.innerHTML = `
+                ${field("Title", "title", project.title)}
+                ${field("Category", "category", project.category)}
+                ${field("Status", "status", project.status)}
+                ${field("Stack Tags", "stack", project.stack)}
+                ${field("Live Demo URL", "link", project.link, "url")}
+                ${field("Repository URL", "repo", project.repo, "url")}
+                ${field("Image URL", "image", project.image, "url", true)}
+                ${fileField("Upload Image", "projectImageUpload")}
+                ${textarea("Description", "description", project.description)}
+                <div class="field full">
+                    <div class="form-actions">
+                        <button class="btn primary" type="submit">${editingProjectId ? "Save Project" : "Add Project"}</button>
+                        <button class="btn ghost" type="button" id="clearProjectForm">Clear</button>
+                    </div>
+                </div>
+            `;
+            bindImageUpload("projectImageUpload", form.elements.image);
+            document.getElementById("clearProjectForm").onclick = () => {
+                editingProjectId = null;
+                renderProjectForm();
+            };
+            form.onsubmit = event => {
+                event.preventDefault();
+                const values = getFormValues(form);
+                if (editingProjectId) {
+                    data.projects = data.projects.map(item => item.id === editingProjectId ? { ...item, ...values } : item);
+                } else {
+                    data.projects.push({ id: makeId("project"), ...values });
+                }
+                editingProjectId = null;
+                saveData("Project saved");
+            };
+        }
+
+        function renderSkillForm() {
+            const skill = data.skills.find(item => item.id === editingSkillId) || { name: "", category: "", level: 70 };
+            const form = document.getElementById("skillForm");
+            document.getElementById("skillFormTitle").textContent = editingSkillId ? "Edit Skill" : "Add Skill";
+            form.innerHTML = `
+                ${field("Skill Name", "name", skill.name)}
+                ${field("Category", "category", skill.category)}
+                ${field("Level 0-100", "level", skill.level, "number")}
+                <div class="field full">
+                    <div class="form-actions">
+                        <button class="btn primary" type="submit">${editingSkillId ? "Save Skill" : "Add Skill"}</button>
+                        <button class="btn ghost" type="button" id="clearSkillForm">Clear</button>
+                    </div>
+                </div>
+            `;
+            form.elements.level.min = 0;
+            form.elements.level.max = 100;
+            document.getElementById("clearSkillForm").onclick = () => {
+                editingSkillId = null;
+                renderSkillForm();
+            };
+            form.onsubmit = event => {
+                event.preventDefault();
+                const values = getFormValues(form);
+                values.level = Math.max(0, Math.min(100, Number(values.level) || 0));
+                if (editingSkillId) {
+                    data.skills = data.skills.map(item => item.id === editingSkillId ? { ...item, ...values } : item);
+                } else {
+                    data.skills.push({ id: makeId("skill"), ...values });
+                }
+                editingSkillId = null;
+                saveData("Skill saved");
+            };
+        }
+
+        function renderScreenshotForm() {
+            const shot = data.screenshots.find(item => item.id === editingScreenshotId) || { title: "", project: "", caption: "", image: "" };
+            const form = document.getElementById("screenshotForm");
+            document.getElementById("screenshotFormTitle").textContent = editingScreenshotId ? "Edit Screenshot" : "Add Screenshot";
+            form.innerHTML = `
+                ${field("Title", "title", shot.title)}
+                ${field("Project", "project", shot.project)}
+                ${field("Image URL", "image", shot.image, "url", true)}
+                ${fileField("Upload Image", "screenshotImageUpload")}
+                ${textarea("Caption", "caption", shot.caption)}
+                <div class="field full">
+                    <div class="form-actions">
+                        <button class="btn primary" type="submit">${editingScreenshotId ? "Save Screenshot" : "Add Screenshot"}</button>
+                        <button class="btn ghost" type="button" id="clearScreenshotForm">Clear</button>
+                    </div>
+                </div>
+            `;
+            bindImageUpload("screenshotImageUpload", form.elements.image);
+            document.getElementById("clearScreenshotForm").onclick = () => {
+                editingScreenshotId = null;
+                renderScreenshotForm();
+            };
+            form.onsubmit = event => {
+                event.preventDefault();
+                const values = getFormValues(form);
+                if (editingScreenshotId) {
+                    data.screenshots = data.screenshots.map(item => item.id === editingScreenshotId ? { ...item, ...values } : item);
+                } else {
+                    data.screenshots.push({ id: makeId("screenshot"), ...values });
+                }
+                editingScreenshotId = null;
+                saveData("Screenshot saved");
+            };
+        }
+
+        function renderCvForm() {
+            const form = document.getElementById("cvForm");
+            const cv = data.cv;
+            form.innerHTML = `
+                ${field("CV File Path", "file", cv.file)}
+                ${field("Format", "format", cv.format)}
+                ${field("File Size", "size", cv.size)}
+                ${field("Last Updated", "updated", cv.updated)}
+                ${field("Language", "language", cv.language)}
+                ${textarea("Contents", "contents", cv.contents)}
+                <div class="field full"><button class="btn primary" type="submit">Save CV Details</button></div>
+            `;
+            form.onsubmit = event => {
+                event.preventDefault();
+                data.cv = { ...data.cv, ...getFormValues(form) };
+                saveData("CV details updated");
+            };
+        }
+
+        function renderManagers() {
+            renderProjectManager();
+            renderSkillManager();
+            renderScreenshotManager();
+        }
+
+        function renderProjectManager() {
+            const manager = document.getElementById("projectManager");
+            manager.innerHTML = data.projects.length ? data.projects.map(item => managerItem(item.id, item.title, `${item.category} / ${item.status}`, "project")).join("") : `<div class="empty">No projects yet.</div>`;
+            bindManagerActions("project", data.projects, id => editingProjectId = id);
+        }
+
+        function renderSkillManager() {
+            const manager = document.getElementById("skillManager");
+            manager.innerHTML = data.skills.length ? data.skills.map(item => managerItem(item.id, item.name, `${item.category} / ${item.level}%`, "skill")).join("") : `<div class="empty">No skills yet.</div>`;
+            bindManagerActions("skill", data.skills, id => editingSkillId = id);
+        }
+
+        function renderScreenshotManager() {
+            const manager = document.getElementById("screenshotManager");
+            manager.innerHTML = data.screenshots.length ? data.screenshots.map(item => managerItem(item.id, item.title, `${item.project}`, "screenshot")).join("") : `<div class="empty">No screenshots yet.</div>`;
+            bindManagerActions("screenshot", data.screenshots, id => editingScreenshotId = id);
+        }
+
+        function bindManagerActions(type, collection, setEditing) {
+            document.querySelectorAll(`[data-edit-${type}]`).forEach(button => {
+                button.addEventListener("click", () => {
+                    setEditing(button.dataset[`edit${capitalize(type)}`]);
+                    renderAdminForms();
+                });
+            });
+
+            document.querySelectorAll(`[data-delete-${type}]`).forEach(button => {
+                button.addEventListener("click", () => {
+                    const id = button.dataset[`delete${capitalize(type)}`];
+                    if (!confirm("Delete this item?")) return;
+                    if (type === "project") data.projects = data.projects.filter(item => item.id !== id);
+                    if (type === "skill") data.skills = data.skills.filter(item => item.id !== id);
+                    if (type === "screenshot") data.screenshots = data.screenshots.filter(item => item.id !== id);
+                    saveData("Item deleted");
+                });
+            });
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "portfolio-cms-data.json";
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast("CMS data exported");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    data = mergeData(cloneData(initialData), JSON.parse(reader.result));
+                    selectedProjectId = data.projects[0]?.id || null;
+                    saveData("CMS data imported");
+                } catch {
+                    showToast("Import failed: invalid JSON");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = "";
+        }
+
+        function cloneData(value) {
+            return JSON.parse(JSON.stringify(value));
+        }
+
+        function makeId(prefix) {
+            if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+                return `${prefix}-${globalThis.crypto.randomUUID()}`;
+            }
+            return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        }
+
+        function bindImageUpload(inputId, targetInput) {
+            const input = document.getElementById(inputId);
+            input.addEventListener("change", () => {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    targetInput.value = reader.result;
+                    showToast("Image loaded into form");
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function emptyProject() {
+            return {
+                title: "",
+                category: "",
+                status: "Concept",
+                description: "",
+                stack: "",
+                link: "",
+                repo: "",
+                image: ""
+            };
+        }
+
+        function managerItem(id, title, meta, type) {
+            return `
+                <div class="manager-item">
+                    <div class="manager-item-header">
+                        <div>
+                            <div class="manager-item-title">${escapeHtml(title)}</div>
+                            <div class="project-meta"><span>${escapeHtml(meta)}</span></div>
+                        </div>
+                        <div class="manager-actions">
+                            <button class="icon-btn" type="button" title="Edit" data-edit-${type}="${id}">E</button>
+                            <button class="icon-btn" type="button" title="Delete" data-delete-${type}="${id}">X</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function field(label, name, value = "", type = "text", full = false) {
+            const id = uniqueFieldId(name);
+            return `
+                <div class="field ${full ? "full" : ""}">
+                    <label for="${id}">${label}</label>
+                    <input id="${id}" name="${name}" type="${type}" value="${escapeAttr(value)}">
+                </div>
+            `;
+        }
+
+        function textarea(label, name, value = "") {
+            const id = uniqueFieldId(name);
+            return `
+                <div class="field full">
+                    <label for="${id}">${label}</label>
+                    <textarea id="${id}" name="${name}">${escapeHtml(value)}</textarea>
+                </div>
+            `;
+        }
+
+        function uniqueFieldId(name) {
+            uniqueFieldId.count = (uniqueFieldId.count || 0) + 1;
+            return `cms-${name}-${uniqueFieldId.count}`;
+        }
+
+        function fileField(label, id) {
+            return `
+                <div class="field full">
+                    <label for="${id}">${label}</label>
+                    <input id="${id}" type="file" accept="image/*">
+                </div>
+            `;
+        }
+
+        function getFormValues(form) {
+            return Object.fromEntries(new FormData(form).entries());
+        }
+
+        function imageMarkup(src, alt) {
+            if (src) return `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}">`;
+            return `<div class="visual-placeholder">${escapeHtml(alt || "Screenshot")}</div>`;
+        }
+
+        function renderTags(tags = "") {
+            return tags.split(",").map(tag => tag.trim()).filter(Boolean).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
+        }
+
+        function groupBy(items, key) {
+            return items.reduce((groups, item) => {
+                const group = item[key] || "Other";
+                groups[group] = groups[group] || [];
+                groups[group].push(item);
+                return groups;
+            }, {});
+        }
+
+        function setText(id, value) {
+            document.getElementById(id).textContent = value;
+        }
+
+        function capitalize(value) {
+            return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+
+        function escapeHtml(value = "") {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function escapeAttr(value = "") {
+            return escapeHtml(value);
+        }
+    </script>
+</body>
+</html>
